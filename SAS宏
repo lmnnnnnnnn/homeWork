@@ -1,0 +1,52 @@
+SAS有一个强大的编程功能叫宏，它允许我们避免重复的代码段，并在需要时一次又一次地使用它们。 
+它还有助于在代码中创建动态变量，可以为同一代码的不同运行实例使用不同的值。
+宏还可以声明为代码块，它将以类似于宏变量的方式被重复使用多次。 我们将在下面的例子中看到这两个
+
+#宏变量
+这些是保存由SAS程序一次又一次使用的值的变量。 它们在SAS程序开始时声明，并在程序体中稍后调用。 它们可以是全局或局部范围。
+
+#全局宏观变量
+它们称为全局宏变量，因为它们可以由SAS环境中可用的任何SAS程序访问。 通常它们是由多个程序访问的系统分配的变量。 一般的例子是系统日期。
+
+#例
+proc print data = sashelp.cars;
+where make = 'Audi' and type = 'Sports' ;
+ TITLE "Sales as of &SYSDAY &SYSDATE";
+run;
+
+#局部宏变量
+这些变量可以被SAS程序访问，在这些程序中它们被声明为程序的一部分。 它们通常用于向相同的SAS语句SL提供不同的变量，使得它们可以处理数据集的不同观察值。
+
+#例
+这些变量由SAS语句使用，并在变量名的开头附加＆字符。 下面的程序得到我们所有的观察的'奥迪'和类型'体育'。 
+如果我们想要不同make的结果，我们需要更改变量make_name的值，而不改变程序的任何其他部分。 在带来程序的情况下，这个变量可以在任何SAS语句中被再次引用。
+%LET make_name = 'Audi';
+%LET type_name = 'Sports';
+proc print data = sashelp.cars;
+where make = &make_name and type = &type_name ;
+ TITLE "Sales as of &SYSDAY &SYSDATE";
+run;
+
+#宏程序
+宏是一组SAS语句，由名称引用，并在程序中使用该名称在任何地方使用它。 它以％MACRO语句开始，以％MEND语句结束。
+句法
+# Creating a Macro program.
+%MACRO (Param1, Param2,….Paramn);
+
+Macro Statements;
+
+%MEND;
+
+# Calling a Macro program.
+%MacroName (Value1, Value2,…..Valuen);
+
+#例子
+以下程序在名为“show_result”的宏下对一组SAT staemnets进行解密; 此宏正由其他SAS语句调用。
+%MACRO show_result(make_ , type_);
+proc print data = sashelp.cars;
+where make = "&make_" and type = "&type_" ;
+TITLE "Sales as of &SYSDAY &SYSDATE";
+run;
+%MEND;
+
+%show_result(BMW,SUV);
